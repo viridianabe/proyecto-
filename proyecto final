@@ -1,0 +1,76 @@
+#include <iostream>
+#include <string>
+#include <cctype>
+using namespace std;
+
+// Función para obtener la primera vocal interna del apellido paterno
+char primeraVocalInterna(const string &apellido) {
+    string vocales = "AEIOU";
+    for (size_t i = 1; i < apellido.length(); i++) {
+        char letra = toupper(apellido[i]);
+        if (vocales.find(letra) != string::npos) {
+            return letra;
+        }
+    }
+    return 'X'; // Si no hay vocal interna
+}
+
+// Función para convertir string a mayúsculas
+string mayusculas(const string &texto) {
+    string resultado = texto;
+    for (char &c : resultado) {
+        c = toupper(c);
+    }
+    return resultado;
+}
+
+int main() {
+    string nombre, apellidoP, apellidoM;
+    int dia, mes, anio;
+
+    cout << "Ingrese apellido paterno: ";
+    cin >> apellidoP;
+    cout << "Ingrese apellido materno (o X si no tiene): ";
+    cin >> apellidoM;
+    cout << "Ingrese nombre: ";
+    cin >> nombre;
+    cout << "Ingrese dia de nacimiento (dd): ";
+    cin >> dia;
+    cout << "Ingrese mes de nacimiento (mm): ";
+    cin >> mes;
+    cout << "Ingrese anio de nacimiento (aaaa): ";
+    cin >> anio;
+
+    // Pasar todo a mayúsculas
+    apellidoP = mayusculas(apellidoP);
+    apellidoM = mayusculas(apellidoM);
+    nombre = mayusculas(nombre);
+
+    // Construcción del RFC
+    string rfc = "";
+
+    // 1 y 2: primera letra del apellido paterno + primera vocal interna
+    rfc += apellidoP[0];
+    rfc += primeraVocalInterna(apellidoP);
+
+    // 3: inicial del apellido materno (o X si no hay)
+    rfc += (apellidoM != "X" && !apellidoM.empty()) ? apellidoM[0] : 'X';
+
+    // 4: inicial del nombre (si forma palabra altisonante, reemplazar por X manualmente)
+    rfc += nombre[0];
+
+    // 5 y 6: últimos dos dígitos del año
+    rfc += to_string(anio).substr(2, 2);
+
+    // 7 y 8: mes con dos dígitos
+    if (mes < 10) rfc += "0";
+    rfc += to_string(mes);
+
+    // 9 y 10: día con dos dígitos
+    if (dia < 10) rfc += "0";
+    rfc += to_string(dia);
+
+    cout << "RFC generado (sin homoclave): " << rfc << endl;
+
+    return 0;
+}
